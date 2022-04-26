@@ -3,19 +3,21 @@ package com.company;
 import java.util.Scanner;
 
 public class Saldo {
-    public double utarg;
+    private double utarg;
     private final int ilosc_przelewow = 100;
     private final int ilosc_monet = 200;
     private final int ilosc_akceptowanych_nominalow = 7;
+    private final int startowych_monet = 5;
 
-    public Pieniadz[] przelewy = new Pieniadz[ilosc_przelewow];
+    private final Pieniadz[] przelewy = new Pieniadz[ilosc_przelewow];
     private int przelewy_index = 0;
-    public Moneta[][] monety = new Moneta[ilosc_akceptowanych_nominalow][ilosc_monet];
+    private final Moneta[][] monety = new Moneta[ilosc_akceptowanych_nominalow][ilosc_monet];
     private int[] monety_index = new int[ilosc_akceptowanych_nominalow];
 
 
+
+
     public Saldo(){
-        int startowych_monet = 10;
         for(int i = 0; i < ilosc_akceptowanych_nominalow;i++){
             for (int j = 0; j < startowych_monet; j++) {
                 monety[i][monety_index[i]] = new Moneta(Moneta.indexNaWartosc(i));
@@ -128,7 +130,7 @@ public class Saldo {
         while (doWydania != 0 && proby!=100){
             if(i<0)
                 break;
-            if(doWydania - Moneta.indexNaWartosc(i) < 0) {
+            if(doWydania - Moneta.indexNaWartosc(i) < 0 || monety_index[i] <=0 ) {
                 i--;
                 continue;
             }
@@ -141,7 +143,8 @@ public class Saldo {
         }
         if(proby==100)
             System.out.println("Brak możliości wydania reszty");
-        System.out.println("Wydano: " + wydano);
+        else
+            System.out.println("Wydano: " + wydano);
 
     }
 

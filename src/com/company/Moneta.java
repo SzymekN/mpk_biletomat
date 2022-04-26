@@ -2,11 +2,12 @@ package com.company;
 
 public class Moneta extends Pieniadz {
 
-    public double srednica;
-    public enum Nominal{
-        GR5(.05), GR10(.1),GR20(.2),GR50(.5),ZL1(1.),ZL2(2.),ZL5(5.);
+    private double srednica;
 
-        private double value;
+    private enum Nominal{
+        GR5(0.05), GR10(0.1),GR20(0.2),GR50(0.5),ZL1(1.0),ZL2(2.0),ZL5(5.0);
+
+        private final double value;
         Nominal(double v){
             this.value = v;
         }
@@ -32,11 +33,12 @@ public class Moneta extends Pieniadz {
     }
 
     public static double indexNaWartosc(int index){
-        for(Nominal nominal : Nominal.values()){
-            if (index == nominal.ordinal())
-                return nominal.getValue();
-        }
-        return -1;
+        return Nominal.values()[index].getValue();
+//        for(Nominal nominal : Nominal.values()){
+//            if (index == nominal.ordinal())
+//                return nominal.getValue();
+//        }
+//        return -1;
     }
 
 

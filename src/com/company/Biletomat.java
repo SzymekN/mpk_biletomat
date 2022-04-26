@@ -5,8 +5,8 @@ import java.util.Scanner;
 
 public class Biletomat {
 
-    public String lokalizacja;
-    public final static String[][] oferta = {
+    private final String lokalizacja;
+    private final static String[][] oferta = {
             {"20 minutowy","4.00"},
             {"60 minutowy lub 1 przejazdowy","6.00"},
             {"90 minutowy","8.00"},
@@ -15,16 +15,63 @@ public class Biletomat {
             {"72 godzinny","50.00"},
             {"7 dniowy","56.00"}
     }; // ilosc roznych biletow, nazwa i cena
-    public String[][] historia_transakcji = new String[100][4]; // historia transakcji wielkosci 100, 4 pola do zapisania
-    public Bilet[] bilety = new Bilet[100];
-    private int index_biletu = 0;
-    private int index_transakcji = 0;
-    public Saldo zarobek = new Saldo();
+    private String[][] historia_transakcji = new String[100][4];    // historia transakcji wielkosci 100, 4 pola do zapisania
+    private Bilet[] bilety = new Bilet[100];                        // bilety wydrukowane przez biletomat
+    private int index_biletu = 0;                                   // index aktualnie za ostatnim stworzonym biletem
+    private int index_transakcji = 0;                               // index za ostatnią transakcją w tablicy histioria_transankcji
+    private final Saldo zarobek = new Saldo();                            // stan kasy w biletomacie
+
+    Biletomat(){
+        lokalizacja = "Nieznana";
+    }
+
+    Biletomat(String lok){
+        lokalizacja = lok;
+    }
+
+    private abstract class RodzajBiletu{
+        protected String rodzaj;
+        protected double cena;
+
+        public String getRodzaj() {
+            return rodzaj;
+        }
+
+        public double getCena() {
+            return cena;
+        }
+    }
+
+    private class Bilet extends RodzajBiletu{
+        private final LocalDate dataWydania;
+
+        public Bilet(String r, double c){
+            rodzaj = r;
+            cena = c;
+            dataWydania = LocalDate.now();
+        }
+
+        @Override
+        public String toString() {
+            return "Bilet{" +
+                    "rodzaj='" + getRodzaj() + '\'' +
+                    ", cena=" + getCena() + '\'' +
+                    "dataWydania='" + getDataWydania() +
+                    '}';
+        }
+
+        public LocalDate getDataWydania() {
+            return dataWydania;
+        }
+    }
+
+    public String getLokalizacja(){
+        return lokalizacja;
+    }
 
     public void sprzedaz(){
         Scanner input = new Scanner(System.in);
 
-//        System.out.println(zarobek);
         System.out.println("Wybierz bilet: ");
         wypiszOferte();
         System.out.println();
