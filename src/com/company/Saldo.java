@@ -3,23 +3,149 @@ package com.company;
 import java.util.Scanner;
 
 public class Saldo {
-    private double utarg;
-    private final int ilosc_przelewow = 100;
-    private final int ilosc_monet = 200;
-    private final int ilosc_akceptowanych_nominalow = 7;
-    private final int startowych_monet = 5;
+    private final int MAX_PRZELEWOW = 100;         // maksymalna ilosc przelewow do zapamietania
+    private final int MAX_MONET = 200;             // maksymalna ilosc egzemplarzy danej monety
+    private final int ILOSC_NOMINALOW = 7;         // ilosc akceptowanych nominalow
+    private final int STARTOWYCH_MONET = 5;        // startowa ilosc monet kazdego nominalu
 
-    private final Pieniadz[] przelewy = new Pieniadz[ilosc_przelewow];
-    private int przelewy_index = 0;
-    private final Moneta[][] monety = new Moneta[ilosc_akceptowanych_nominalow][ilosc_monet];
-    private int[] monety_index = new int[ilosc_akceptowanych_nominalow];
+    private double utarg;                          // zarobione pieniadze
+    private final PlatnoscBezgotowkowa[] przelewy = new PlatnoscBezgotowkowa[MAX_PRZELEWOW];    // historia przelewow - KOMPOZYCJA
+    private int przelewy_index = 0;                                                             // index za ostatnim przelewem
+    private final Moneta[][] monety = new Moneta[ILOSC_NOMINALOW][MAX_MONET];                   // monety w biletomacie - KOMPOZYCJA
+    private int[] monety_index = new int[ILOSC_NOMINALOW];                                      // index za ostatnia moneta danego nominalu
 
 
+    private abstract class Pieniadz {
+        private double wartosc;
 
+        public Pieniadz(){
+            this.setWartosc(0);
+        }
+
+        public Pieniadz(double wartosc){
+            this.setWartosc(wartosc);
+        }
+
+        public double getWartosc() {
+            return wartosc;
+        }
+
+        public void setWartosc(double wartosc) {
+            this.wartosc = wartosc;
+        }
+
+        @Override
+        public String toString() {
+            return "Pieniadz{" +
+                    "wartosc=" + wartosc +
+                    '}';
+        }
+    }
+
+    //DZIEDZICZENIE po klasie Pieniadz
+    private class PlatnoscBezgotowkowa extends Pieniadz {
+
+        private final int nrKontaKupujacego;
+        private final static int MAX = 9_999_999;
+        private final static int MIN = 1_000_000;
+
+        private int wylosujKonto(){
+            return (int) ((Math.random() *  (MAX - MIN)) + MIN);
+        }
+
+        PlatnoscBezgotowkowa(){
+            super();
+            nrKontaKupujacego = wylosujKonto();
+        }
+
+        PlatnoscBezgotowkowa(double w){
+            super(w);
+            nrKontaKupujacego = wylosujKonto();
+            System.out.println(this);
+        }
+
+        public int getNrKontaKupujacego() {
+            return nrKontaKupujacego;
+        }
+
+        @Override
+        public String toString() {
+            return "PlatnoscBezgotowkowa{" + super.toString() +
+                    "nrKontaKupujacego=" + nrKontaKupujacego +
+                    '}';
+        }
+    }
+
+    //DZIEDZICZENIE po klasie Pieniadz
+    private class Moneta extends Pieniadz{
+        private double srednica;
+
+        private enum Nominal{
+            GR5(0.05), GR10(0.1),GR20(0.2),GR50(0.5),ZL1(1.0),ZL2(2.0),ZL5(5.0);
+
+            private final double value;
+            Nominal(double v){
+                this.value = v;
+            }
+
+            public double getValue() {
+                return value;
+            }
+        }
+
+
+        @Override
+        public String toString() {
+            return "Moneta{" + super.toString() +
+                    "srednica=" + srednica +
+                    '}';
+        }
+
+        public static int wartoscNaIndex(double wartosc){
+            for(Nominal nominal : Nominal.values()){
+                if (wartosc == nominal.getValue())
+                    return nominal.ordinal();
+            }
+            return -1;
+        }
+
+        public static double indexNaWartosc(int index){
+            return Nominal.values()[index].getValue();
+//        for(Nominal nominal : Nominal.values()){
+//            if (index == nominal.ordinal())
+//                return nominal.getValue();
+//        }
+//        return -1;
+        }
+
+
+        public Moneta(double wartosc){
+            super(wartosc);
+
+            // automat akceptuje monety o wartości powyżej 2gr
+            if (wartosc == 0.05)
+                srednica = 6;
+            else if (wartosc == 0.1)
+                srednica = 3;
+            else if (wartosc == .2)
+                srednica = 4;
+            else if (wartosc == .5)
+                srednica = 5;
+            else if (wartosc == 1.)
+                srednica = 8;
+            else if (wartosc == 2.)
+                srednica = 7;
+            else if (wartosc == 5.)
+                srednica = 10;
+
+        }
+
+
+    }
 
     public Saldo(){
-        for(int i = 0; i < ilosc_akceptowanych_nominalow;i++){
-            for (int j = 0; j < startowych_monet; j++) {
+        for(int i = 0; i < ILOSC_NOMINALOW;i++){
+            for (int j = 0; j < STARTOWYCH_MONET; j++) {
                 monety[i][monety_index[i]] = new Moneta(Moneta.indexNaWartosc(i));
                 monety_index[i]++;
             }
@@ -30,11 +156,11 @@ public class Saldo {
     public String toString() {
         String zawartosc = "";
         String przelane = "";
-        for (int i = 0;i<ilosc_akceptowanych_nominalow;i++){
+        for (int i = 0;i<ILOSC_NOMINALOW;i++){
             zawartosc += (monety_index[i])+"*" + Moneta.indexNaWartosc(i)+"\n";
         }
         for (int i = 0;i<przelewy_index;i++) {
-            przelane += przelewy[i].getWartosc();
+            przelane += przelewy[i].getWartosc() +", ";
         }
             return "Saldo{" +
                 "\nutarg=" + utarg +
@@ -44,8 +170,8 @@ public class Saldo {
     }
 
     public boolean karta(double koszt){
-        if(przelewy_index < ilosc_przelewow) {
-            przelewy[przelewy_index] = new Pieniadz(koszt);
+        if(przelewy_index < MAX_PRZELEWOW) {
+            przelewy[przelewy_index] = new PlatnoscBezgotowkowa(koszt);
             przelewy_index++;
             System.out.println("Kwota przelewu: "+koszt);
             utarg += koszt;
@@ -106,11 +232,11 @@ public class Saldo {
         }
 
         if(wplacone > koszt)
-            wydajReszte(doWydania);
+            wydajReszte(Math.abs(doWydania));
 
         for(int j = 0; j < i;j++){
             int index = Moneta.wartoscNaIndex(wartosci[j]);
-            if (monety_index[index] >= ilosc_monet){
+            if (monety_index[index] >= MAX_MONET){
                 System.out.println("Kasa pełna");
                 break;
             }
@@ -118,13 +244,13 @@ public class Saldo {
         }
 
         utarg += koszt;
-        System.out.println(this);
+//        System.out.println(this);
         return true;
 
     }
 
     public void wydajReszte(double doWydania){
-        int i = ilosc_akceptowanych_nominalow-1;
+        int i = ILOSC_NOMINALOW-1;
         int proby = 0;
         String wydano = "";
         while (doWydania != 0 && proby!=100){
@@ -141,7 +267,7 @@ public class Saldo {
             }
             proby++;
         }
-        if(proby==100)
+        if(proby==100 || doWydania > 0)
             System.out.println("Brak możliości wydania reszty");
         else
             System.out.println("Wydano: " + wydano);

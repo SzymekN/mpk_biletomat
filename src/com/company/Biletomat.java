@@ -15,11 +15,11 @@ public class Biletomat {
             {"72 godzinny","50.00"},
             {"7 dniowy","56.00"}
     }; // ilosc roznych biletow, nazwa i cena
-    private String[][] historia_transakcji = new String[100][4];    // historia transakcji wielkosci 100, 4 pola do zapisania
-    private Bilet[] bilety = new Bilet[100];                        // bilety wydrukowane przez biletomat
-    private int index_biletu = 0;                                   // index aktualnie za ostatnim stworzonym biletem
-    private int index_transakcji = 0;                               // index za ostatnią transakcją w tablicy histioria_transankcji
-    private final Saldo zarobek = new Saldo();                            // stan kasy w biletomacie
+    private final String[][] historia_transakcji = new String[100][4];      // historia transakcji wielkosci 100, 4 pola do zapisania - KOMPOZYCJA
+    private final Bilet[] bilety = new Bilet[100];                          // bilety wydrukowane przez biletomat - KOMPOZYCJA
+    private int index_biletu = 0;                                           // index aktualnie za ostatnim stworzonym biletem
+    private int index_transakcji = 0;                                       // index za ostatnią transakcją w tablicy histioria_transankcji
+    private final Saldo zarobek = new Saldo();                              // stan kasy w biletomacie - KOMPOZYCJA
 
     Biletomat(){
         lokalizacja = "Nieznana";
@@ -29,6 +29,7 @@ public class Biletomat {
         lokalizacja = lok;
     }
 
+    // klasa wewnętrzna
     private abstract class RodzajBiletu{
         protected String rodzaj;
         protected double cena;
@@ -42,6 +43,7 @@ public class Biletomat {
         }
     }
 
+    // DZIEDZICZENIE po klasie Bilet
     private class Bilet extends RodzajBiletu{
         private final LocalDate dataWydania;
 
@@ -84,7 +86,7 @@ public class Biletomat {
         System.out.println("Rodzaj płatności: \n1. Karta\n2. Gotówka ");
         int platnosc = input.nextInt();
 
-        boolean transakcjaUdana = false;
+        boolean transakcjaUdana;
         if(platnosc == 1)
             transakcjaUdana = zarobek.karta(koszt);
         else
