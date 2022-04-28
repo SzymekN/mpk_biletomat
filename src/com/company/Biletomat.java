@@ -3,9 +3,14 @@ package com.company;
 import java.time.LocalDate;
 import java.util.Scanner;
 
+/**
+ * Klasa realizujaca sprzedaż biletów
+ */
 public class Biletomat {
 
+    /**lokalizacja biletomatu*/
     private final String lokalizacja;
+    /**rodzaje roznych biletow, nazwa i cena*/
     private final static String[][] oferta = {
             {"20 minutowy","4.00"},
             {"60 minutowy lub 1 przejazdowy","6.00"},
@@ -14,12 +19,22 @@ public class Biletomat {
             {"48 godzinny","35.00"},
             {"72 godzinny","50.00"},
             {"7 dniowy","56.00"}
-    }; // ilosc roznych biletow, nazwa i cena
-    private final String[][] historia_transakcji = new String[100][4];      // historia transakcji wielkosci 100, 4 pola do zapisania - KOMPOZYCJA
-    private final Bilet[] bilety = new Bilet[100];                          // bilety wydrukowane przez biletomat - KOMPOZYCJA
-    private int index_biletu = 0;                                           // index aktualnie za ostatnim stworzonym biletem
-    private int index_transakcji = 0;                                       // index za ostatnią transakcją w tablicy histioria_transankcji
-    private final Saldo zarobek = new Saldo();                              // stan kasy w biletomacie - KOMPOZYCJA
+    };
+
+    /** historia transakcji wielkosci 100, 4 pola do zapisania - KOMPOZYCJA*/
+    private final String[][] historia_transakcji = new String[100][4];
+
+    /**bilety wydrukowane przez biletomat - KOMPOZYCJA*/
+    private final Bilet[] bilety = new Bilet[100];
+
+    /**index aktualnie za ostatnim stworzonym biletem*/
+    private int index_biletu = 0;
+
+    /**index za ostatnią transakcją w tablicy histioria_transankcji*/
+    private int index_transakcji = 0;
+
+    /**stan kasy w biletomacie - KOMPOZYCJA*/
+    private final Saldo zarobek = new Saldo();
 
     Biletomat(){
         lokalizacja = "Nieznana";
@@ -55,9 +70,9 @@ public class Biletomat {
 
         @Override
         public String toString() {
-            return "Bilet{" +
-                    "rodzaj='" + getRodzaj() + '\'' +
-                    ", cena=" + getCena() + '\'' +
+            return "Bilet{" + '\n' +
+                    "rodzaj='" + getRodzaj() + '\n' +
+                    "cena=" + getCena() + '\n' +
                     "dataWydania='" + getDataWydania() +
                     '}';
         }
@@ -108,6 +123,20 @@ public class Biletomat {
 
     }
 
+    @Override
+    public String toString() {
+        String str = "";
+        for (int i =0;i<index_transakcji;i++){
+            String[] transakcja = historia_transakcji[i];
+            str += transakcja[0]+" : "+transakcja[1]+" : " + transakcja[2]+" : "+transakcja[3] + "\n";
+        }
+        return str;
+    }
+
+    /**
+     * Wypisuje wszytkie sprzedane biletu
+     * @param data wypisuje bilety sprzedane tego dnia
+     * */
     public void wypiszHistorie(LocalDate data){
         System.out.println("Historia z dnia: "+ data);
         for (int i =0;i<index_transakcji;i++){
@@ -117,6 +146,7 @@ public class Biletomat {
         }
     }
 
+    /**Wypisuje wszystkie możliwe do kupienia bilety*/
     public void wypiszOferte(){
         for (int i =0; i < oferta.length; i++){
             System.out.println((i+1)+". "+ oferta[i][0]+", cena: "+oferta[i][1]);

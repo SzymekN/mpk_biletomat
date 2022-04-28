@@ -3,19 +3,30 @@ package com.company;
 import java.util.Scanner;
 
 public class Saldo {
-    private final int MAX_PRZELEWOW = 100;         // maksymalna ilosc przelewow do zapamietania
-    private final int MAX_MONET = 200;             // maksymalna ilosc egzemplarzy danej monety
-    private final int ILOSC_NOMINALOW = 7;         // ilosc akceptowanych nominalow
-    private final int STARTOWYCH_MONET = 5;        // startowa ilosc monet kazdego nominalu
 
-    private double utarg;                          // zarobione pieniadze
-    private final PlatnoscBezgotowkowa[] przelewy = new PlatnoscBezgotowkowa[MAX_PRZELEWOW];    // historia przelewow - KOMPOZYCJA
-    private int przelewy_index = 0;                                                             // index za ostatnim przelewem
-    private final Moneta[][] monety = new Moneta[ILOSC_NOMINALOW][MAX_MONET];                   // monety w biletomacie - KOMPOZYCJA
-    private int[] monety_index = new int[ILOSC_NOMINALOW];                                      // index za ostatnia moneta danego nominalu
+    /**maksymalna ilosc przelewow do zapamietania*/
+    private final int MAX_PRZELEWOW = 100;
+    /**maksymalna ilosc egzemplarzy danej monety*/
+    private final int MAX_MONET = 200;
+    /**ilosc akceptowanych nominalow*/
+    private final int ILOSC_NOMINALOW = 7;
+    /**startowa ilosc monet kazdego nominalu*/
+    private final int STARTOWYCH_MONET = 5;
+
+    /**zarobione pieniadze*/
+    private double utarg;
+    /**historia przelewow - KOMPOZYCJA*/
+    private final PlatnoscBezgotowkowa[] przelewy = new PlatnoscBezgotowkowa[MAX_PRZELEWOW];
+    /**index za ostatnim przelewem*/
+    private int przelewy_index = 0;
+    /**monety w biletomacie - KOMPOZYCJA*/
+    private final Moneta[][] monety = new Moneta[ILOSC_NOMINALOW][MAX_MONET];
+    /**index za ostatnia moneta danego nominalu*/
+    private int[] monety_index = new int[ILOSC_NOMINALOW];
 
 
     private abstract class Pieniadz {
+        /**Wartość pieniądza*/
         private double wartosc;
 
         public Pieniadz(){
@@ -45,8 +56,12 @@ public class Saldo {
     //DZIEDZICZENIE po klasie Pieniadz
     private class PlatnoscBezgotowkowa extends Pieniadz {
 
+
+        /**Nr konta osoby która kupiła bilet*/
         private final int nrKontaKupujacego;
+        /**Najewiększy numer konta - górny zakres losowania*/
         private final static int MAX = 9_999_999;
+        /**Najmniejszy numer konta - dolny zakres losowania*/
         private final static int MIN = 1_000_000;
 
         private int wylosujKonto(){
@@ -61,7 +76,6 @@ public class Saldo {
         PlatnoscBezgotowkowa(double w){
             super(w);
             nrKontaKupujacego = wylosujKonto();
-            System.out.println(this);
         }
 
         public int getNrKontaKupujacego() {
@@ -78,6 +92,7 @@ public class Saldo {
 
     //DZIEDZICZENIE po klasie Pieniadz
     private class Moneta extends Pieniadz{
+        /**Srednica monety*/
         private double srednica;
 
         private enum Nominal{
@@ -169,6 +184,11 @@ public class Saldo {
                 '}';
     }
 
+    /**
+     * Realuzje płatność kartą
+     * @param koszt koszt przelewu
+     * @return true jeśli płatność się udała
+     * */
     public boolean karta(double koszt){
         if(przelewy_index < MAX_PRZELEWOW) {
             przelewy[przelewy_index] = new PlatnoscBezgotowkowa(koszt);
@@ -183,6 +203,11 @@ public class Saldo {
         return true;
     }
 
+    /**
+     * Realuzje płatność gotówką
+     * @param koszt koszt kupowanych biletów
+     * @return true jeśli płatność się udała
+     * */
     public boolean gotowka(double koszt){
         double wplacone = 0;
         double[] wartosci = new double[100];
@@ -249,6 +274,11 @@ public class Saldo {
 
     }
 
+
+    /**
+     * Wydaje resztę na podstawie stanu automatu
+     * @param doWydania kwota do wydania
+     * */
     public void wydajReszte(double doWydania){
         int i = ILOSC_NOMINALOW-1;
         int proby = 0;

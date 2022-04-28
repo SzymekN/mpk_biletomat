@@ -9,7 +9,8 @@ public class Main {
         Biletomat test = new Biletomat();
         while (true) {
             test.sprzedaz();
-            test.wypiszHistorie(LocalDate.now());
+//            test.wypiszHistorie(LocalDate.now());
+            System.out.println(test);
         }
     }
 
